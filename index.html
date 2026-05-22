@@ -6,53 +6,20 @@
 <title>Weakly Prime-Additive Explorer</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Thai:wght@300;400;500&display=swap');
-
   :root {
-    --bg: #0d0f14;
-    --bg2: #13161e;
-    --bg3: #1a1e28;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.14);
-    --text: #e8eaf0;
-    --text2: #8a8fa8;
-    --text3: #555a72;
-    --green: #00e5a0;
-    --green-dim: rgba(0,229,160,0.12);
-    --purple: #a78bfa;
-    --purple-dim: rgba(167,139,250,0.12);
-    --amber: #fbbf24;
-    --amber-dim: rgba(251,191,36,0.1);
-    --red: #f87171;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans Thai', sans-serif;
+    --bg: #0d0f14; --bg2: #13161e; --bg3: #1a1e28;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #e8eaf0; --text2: #8a8fa8; --text3: #555a72;
+    --green: #00e5a0; --green-dim: rgba(0,229,160,0.12);
+    --purple: #a78bfa; --purple-dim: rgba(167,139,250,0.12);
+    --amber: #fbbf24; --amber-dim: rgba(251,191,36,0.1);
+    --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans Thai', sans-serif;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
   .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; position: relative; z-index: 1; }
   .header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-  .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem; }
   .logo-badge { width: 36px; height: 36px; border-radius: 8px; background: var(--green-dim); border: 1px solid rgba(0,229,160,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 14px; color: var(--green); font-weight: 500; }
   h1 { font-size: 22px; font-weight: 500; color: var(--text); letter-spacing: -0.3px; }
@@ -78,7 +45,6 @@
   .progress-wrap { height: 2px; background: var(--border); border-radius: 1px; margin-bottom: 1.25rem; overflow: hidden; display: none; }
   .progress-bar { height: 100%; background: var(--green); width: 0%; transition: width 0.1s; box-shadow: 0 0 8px var(--green); }
   .stats-grid { display: grid; gap: 10px; margin-bottom: 1.5rem; }
-  @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
   .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; text-align: center; }
   .stat-val { font-family: var(--mono); font-size: 24px; font-weight: 500; color: var(--text); }
   .stat-val.green { color: var(--green); }
@@ -110,7 +76,6 @@
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .chip { padding: 3px 10px; border-radius: 4px; font-size: 12px; font-family: var(--mono); }
   .chip-green { background: var(--green-dim); border: 1px solid rgba(0,229,160,0.2); color: var(--green); }
-  .chip-gray { background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--text2); }
   .pattern-table { width: 100%; border-collapse: collapse; }
   .pattern-table td { padding: 6px 0; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; color: var(--text2); }
   .pattern-table tr:last-child td { border-bottom: none; }
@@ -119,17 +84,12 @@
 </head>
 <body>
 <div class="container">
-
   <div class="header">
-    <div class="header-top">
-      <div>
-        <div class="logo-area">
-          <div class="logo-badge">ℙ</div>
-          <h1>Weakly Prime-Additive Explorer</h1>
-        </div>
-        <p class="subtitle">n = <span>p₁<sup>a</sup> · p₂<sup>b</sup> · p₃<sup>c</sup></span> = <span>p₁<sup>α</sup> + p₂<sup>β</sup> + p₃<sup>γ</sup></span></p>
-      </div>
+    <div class="logo-area">
+      <div class="logo-badge">ℙ</div>
+      <h1>Weakly Prime-Additive Explorer</h1>
     </div>
+    <p class="subtitle">n = <span>p₁<sup>a</sup> · p₂<sup>b</sup> · p₃<sup>c</sup></span> = <span>p₁<sup>α</sup> + p₂<sup>β</sup> + p₃<sup>γ</sup></span></p>
   </div>
 
   <div class="controls-grid">
@@ -158,9 +118,7 @@
     </div>
   </div>
 
-  <div class="progress-wrap" id="progressWrap">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
+  <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
 
   <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
     <div class="stat-card"><div class="stat-val green" id="statCount">—</div><div class="stat-lbl">พบทั้งหมด</div></div>
@@ -196,10 +154,10 @@
   <div id="tab-insight" style="display:none">
     <div id="insightContent" class="empty-msg">รันการค้นหาก่อนเพื่อดู observations</div>
   </div>
-
 </div>
+
 <script>
-let results=[], filtered=[], reqBase=true;
+let results=[],filtered=[],reqBase=true;
 
 function toggleReq(){
   reqBase=!reqBase;
@@ -304,7 +262,8 @@ function buildInsights(){
   const maxC=topPat[0]?.[1]||1;
   const oddExpMult=results.filter(r=>r.fac.every(([,e])=>e%2===1));
   const oddExpAdd=results.filter(r=>r.sol.every(([,e])=>e%2===1));
-  function fmtSup(tuples,sep){return tuples.map(([p,e])=>`${p}<sup>${e}</sup>`).join(sep);}
+  const sigma3OddMult=results.filter(r=>r.sigma%3===0&&r.fac.every(([,e])=>e%2===1));
+  function fmtSup(t,s){return t.map(([p,e])=>`${p}<sup>${e}</sup>`).join(s);}
 
   el.innerHTML=`<div class="insight-grid">
     <div class="insight-card">
@@ -340,6 +299,19 @@ function buildInsights(){
           <td style="color:var(--text);font-weight:500">${r.n.toLocaleString()}</td>
           <td><span class="badge-add" style="font-size:12px">${fmtSup(r.sol,' + ')}</span></td>
           <td style="color:var(--amber)">${r.sol.map(([,e])=>e).join(', ')}</td>
+        </tr>`).join('')}
+      </table></div>`}
+    </div>
+    <div class="insight-card">
+      <h3><span class="sig">σ</span>(n) หารด้วย 3 ลงตัว และชี้กำลังผลคูณเป็นคี่ทั้งหมด — พบ ${sigma3OddMult.length} จำนวน</h3>
+      ${sigma3OddMult.length===0?`<p style="color:var(--text3);font-size:13px;font-family:var(--mono)">ไม่พบในช่วงที่ค้นหา</p>`:`
+      <div style="max-height:220px;overflow-y:auto"><table class="pattern-table">
+        <tr><td style="color:var(--text3);font-size:11px">n</td><td style="color:var(--text3);font-size:11px"><span class="sig">σ</span>(n)</td><td style="color:var(--text3);font-size:11px">รูปผลคูณ</td><td style="color:var(--text3);font-size:11px">ชี้กำลัง</td></tr>
+        ${sigma3OddMult.map(r=>`<tr>
+          <td style="color:var(--text);font-weight:500">${r.n.toLocaleString()}</td>
+          <td style="color:var(--purple)">${r.sigma.toLocaleString()}</td>
+          <td><span class="badge-mult" style="font-size:12px">${fmtSup(r.fac,' × ')}</span></td>
+          <td style="color:var(--amber)">${r.fac.map(([,e])=>e).join(', ')}</td>
         </tr>`).join('')}
       </table></div>`}
     </div>
