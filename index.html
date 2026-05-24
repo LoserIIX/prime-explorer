@@ -91,7 +91,6 @@
     </div>
     <p class="subtitle">n = <span>p₁<sup>a</sup> · p₂<sup>b</sup> · p₃<sup>c</sup></span> = <span>p₁<sup>α</sup> + p₂<sup>β</sup> + p₃<sup>γ</sup></span></p>
   </div>
-
   <div class="controls-grid">
     <div class="ctrl-block">
       <label>ค้นหาถึง n =</label>
@@ -117,20 +116,16 @@
       <button class="run-btn" id="runBtn" onclick="runSearch()">▶ เริ่มค้นหา</button>
     </div>
   </div>
-
   <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
-
   <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
     <div class="stat-card"><div class="stat-val green" id="statCount">—</div><div class="stat-lbl">พบทั้งหมด</div></div>
     <div class="stat-card"><div class="stat-val" id="statMin">—</div><div class="stat-lbl">ค่าต่ำสุด</div></div>
     <div class="stat-card"><div class="stat-val" id="statMax">—</div><div class="stat-lbl">ค่าสูงสุด</div></div>
   </div>
-
   <div class="tabs">
     <button class="tab active" onclick="switchTab('table',this)">ตาราง</button>
     <button class="tab" onclick="switchTab('insight',this)">สังเกต</button>
   </div>
-
   <div id="tab-table">
     <div class="tbl-outer">
       <div class="filter-bar">
@@ -150,12 +145,10 @@
       <div class="tbl-footer" id="tableCount"></div>
     </div>
   </div>
-
   <div id="tab-insight" style="display:none">
     <div id="insightContent" class="empty-msg">รันการค้นหาก่อนเพื่อดู observations</div>
   </div>
 </div>
-
 <script>
 let results=[],filtered=[],reqBase=true;
 
@@ -306,11 +299,18 @@ function buildInsights(){
       <h3><span class="sig">σ</span>(n) ที่หารด้วย 3 ลงตัว และเลขชี้กำลังของรูปผลคูณที่เป็นคี่ทั้งหมด — พบ ${sigma3OddMult.length} จำนวน</h3>
       ${sigma3OddMult.length===0?`<p style="color:var(--text3);font-size:13px;font-family:var(--mono)">ไม่พบในช่วงที่ค้นหา</p>`:`
       <div style="max-height:220px;overflow-y:auto"><table class="pattern-table">
-        <tr><td style="color:var(--text3);font-size:11px">n</td><td style="color:var(--text3);font-size:11px"><span class="sig">σ</span>(n)</td><td style="color:var(--text3);font-size:11px">รูปผลคูณ</td><td style="color:var(--text3);font-size:11px">ชี้กำลัง</td></tr>
+        <tr>
+          <td style="color:var(--text3);font-size:11px">n</td>
+          <td style="color:var(--text3);font-size:11px"><span class="sig">σ</span>(n)</td>
+          <td style="color:var(--text3);font-size:11px">รูปผลคูณ</td>
+          <td style="color:var(--text3);font-size:11px">รูปผลบวก</td>
+          <td style="color:var(--text3);font-size:11px">ชี้กำลัง</td>
+        </tr>
         ${sigma3OddMult.map(r=>`<tr>
           <td style="color:var(--text);font-weight:500">${r.n.toLocaleString()}</td>
           <td style="color:var(--purple)">${r.sigma.toLocaleString()}</td>
           <td><span class="badge-mult" style="font-size:12px">${fmtSup(r.fac,' × ')}</span></td>
+          <td><span class="badge-add" style="font-size:12px">${fmtSup(r.sol,' + ')}</span></td>
           <td style="color:var(--amber)">${r.fac.map(([,e])=>e).join(', ')}</td>
         </tr>`).join('')}
       </table></div>`}
