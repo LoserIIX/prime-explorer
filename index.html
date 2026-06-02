@@ -4,100 +4,126 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Weakly Prime-Additive Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Thai:wght@300;400;500&display=swap');
-  :root {
-    --bg: #0d0f14; --bg2: #13161e; --bg3: #1a1e28;
-    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
-    --text: #e8eaf0; --text2: #8a8fa8; --text3: #555a72;
-    --green: #00e5a0; --green-dim: rgba(0,229,160,0.12);
-    --purple: #a78bfa; --purple-dim: rgba(167,139,250,0.12);
-    --amber: #fbbf24; --amber-dim: rgba(251,191,36,0.1);
-    --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans Thai', sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; font-size: 14px; line-height: 1.6; }
-  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
-  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; position: relative; z-index: 1; }
-  .header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-  .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem; }
-  .logo-badge { width: 36px; height: 36px; border-radius: 8px; background: var(--green-dim); border: 1px solid rgba(0,229,160,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 14px; color: var(--green); font-weight: 500; }
-  h1 { font-size: 22px; font-weight: 500; color: var(--text); letter-spacing: -0.3px; }
-  .subtitle { font-size: 13px; color: var(--text2); margin-top: 6px; font-family: var(--mono); }
-  .subtitle span { color: var(--green); }
-  .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 1.25rem; }
-  .ctrl-block { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; transition: border-color 0.2s; }
-  .ctrl-block:hover { border-color: var(--border2); }
-  .ctrl-block label { display: block; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; font-family: var(--mono); }
-  .ctrl-block input[type=number], .ctrl-block select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 14px; padding: 7px 10px; outline: none; transition: border-color 0.2s; }
-  .ctrl-block input[type=number]:focus, .ctrl-block select:focus { border-color: var(--green); }
-  .ctrl-block select option { background: var(--bg3); }
-  .toggle-wrap { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-  .toggle { width: 40px; height: 22px; border-radius: 11px; background: var(--bg3); border: 1px solid var(--border2); cursor: pointer; position: relative; transition: background 0.2s, border-color 0.2s; flex-shrink: 0; }
-  .toggle.on { background: rgba(0,229,160,0.2); border-color: var(--green); }
-  .toggle::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--text3); top: 2px; left: 2px; transition: left 0.2s, background 0.2s; }
-  .toggle.on::after { left: 20px; background: var(--green); }
-  .toggle-label { font-size: 13px; color: var(--text2); font-family: var(--mono); }
-  .run-btn { width: 100%; padding: 11px; background: var(--green-dim); border: 1px solid rgba(0,229,160,0.3); border-radius: 8px; color: var(--green); font-family: var(--mono); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s, border-color 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; }
-  .run-btn:hover { background: rgba(0,229,160,0.2); border-color: rgba(0,229,160,0.5); }
-  .run-btn:active { transform: scale(0.98); }
-  .run-btn.running { opacity: 0.5; pointer-events: none; }
-  .progress-wrap { height: 2px; background: var(--border); border-radius: 1px; margin-bottom: 1.25rem; overflow: hidden; display: none; }
-  .progress-bar { height: 100%; background: var(--green); width: 0%; transition: width 0.1s; box-shadow: 0 0 8px var(--green); }
-  .stats-grid { display: grid; gap: 10px; margin-bottom: 1.5rem; }
-  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; text-align: center; }
-  .stat-val { font-family: var(--mono); font-size: 24px; font-weight: 500; color: var(--text); }
-  .stat-val.green { color: var(--green); }
-  .stat-lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; font-family: var(--mono); }
-  .tabs { display: flex; gap: 2px; margin-bottom: 1.25rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 4px; width: fit-content; }
-  .tab { padding: 6px 16px; font-size: 13px; cursor: pointer; border: none; background: none; color: var(--text2); border-radius: 7px; font-family: var(--mono); transition: background 0.15s, color 0.15s; }
-  .tab.active { background: var(--bg3); color: var(--text); border: 1px solid var(--border2); }
-  .tbl-outer { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .filter-bar { display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-  .filter-bar label { font-size: 11px; color: var(--text3); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.5px; }
-  .filter-bar input { width: 80px; background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; color: var(--text); font-family: var(--mono); font-size: 12px; padding: 4px 8px; outline: none; }
-  .filter-bar input:focus { border-color: var(--green); }
-  .tbl-scroll { overflow-x: auto; max-height: 400px; overflow-y: auto; }
-  table { width: 100%; border-collapse: collapse; }
-  th { background: var(--bg3); color: var(--text3); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; padding: 10px 14px; text-align: left; position: sticky; top: 0; border-bottom: 1px solid var(--border); font-family: var(--mono); font-weight: 400; white-space: nowrap; }
-  td { padding: 8px 14px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 13px; color: var(--text2); white-space: nowrap; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.02); }
-  td.num { color: var(--text); font-weight: 500; }
-  td.sigma-val { color: var(--purple); }
-  .sig { font-family: Georgia, serif; font-style: italic; }
-  .badge-mult { display: inline-block; padding: 2px 8px; background: var(--purple-dim); border: 1px solid rgba(167,139,250,0.2); border-radius: 4px; color: var(--purple); font-size: 12px; }
-  .badge-add { display: inline-block; padding: 2px 8px; background: var(--green-dim); border: 1px solid rgba(0,229,160,0.2); border-radius: 4px; color: var(--green); font-size: 12px; }
-  .tbl-footer { padding: 8px 14px; font-size: 11px; color: var(--text3); font-family: var(--mono); border-top: 1px solid var(--border); }
-  .empty-msg { padding: 3rem; text-align: center; color: var(--text3); font-family: var(--mono); font-size: 13px; }
-  .insight-grid { display: grid; gap: 12px; }
-  .insight-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-  .insight-card h3 { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 12px; font-family: var(--mono); font-weight: 400; }
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .chip { padding: 3px 10px; border-radius: 4px; font-size: 12px; font-family: var(--mono); }
-  .chip-green { background: var(--green-dim); border: 1px solid rgba(0,229,160,0.2); color: var(--green); }
-  .pattern-table { width: 100%; border-collapse: collapse; }
-  .pattern-table td { padding: 6px 0; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; color: var(--text2); }
-  .pattern-table tr:last-child td { border-bottom: none; }
-  .bar-fill { display: inline-block; height: 6px; background: var(--green); border-radius: 3px; opacity: 0.6; vertical-align: middle; margin-left: 6px; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --paper: #F7F5F0;
+  --ink: #1A1814;
+  --ink2: #5C5850;
+  --ink3: #A8A39A;
+  --line: #E0DDD6;
+  --line2: #CCC9C0;
+  --blue: #2C5F8A;
+  --green: #2A6B4A;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+.site-header { border-bottom: 1.5px solid var(--ink); padding-bottom: 1.5rem; margin-bottom: 3rem; }
+.site-title { font-family: var(--mono); font-size: 13px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+h1 { font-family: var(--sans); font-size: clamp(22px, 3vw, 32px); font-weight: 300; letter-spacing: -0.02em; color: var(--ink); margin-top: 6px; line-height: 1.2; }
+.formula { font-family: var(--mono); font-size: 12px; color: var(--ink2); margin-top: 8px; letter-spacing: 0.02em; }
+.section-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
+
+.config { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line2); margin-bottom: 2rem; }
+.config-cell { background: var(--paper); padding: 16px 18px; }
+.config-cell label { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+.config-cell input[type=number], .config-cell select { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line2); padding: 4px 0; font-family: var(--mono); font-size: 15px; color: var(--ink); outline: none; appearance: none; -webkit-appearance: none; }
+.config-cell input[type=number]:focus, .config-cell select:focus { border-bottom-color: var(--ink); }
+
+.toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.tog { position: relative; width: 36px; height: 20px; border: 1px solid var(--line2); border-radius: 10px; background: transparent; cursor: pointer; transition: background 0.2s, border-color 0.2s; flex-shrink: 0; }
+.tog.on { background: var(--ink); border-color: var(--ink); }
+.tog::after { content: ''; position: absolute; width: 12px; height: 12px; border-radius: 50%; background: var(--line2); top: 3px; left: 3px; transition: left 0.2s, background 0.2s; }
+.tog.on::after { left: 19px; background: var(--paper); }
+.tog-label { font-family: var(--mono); font-size: 12px; color: var(--ink2); }
+
+.run-btn { width: 100%; padding: 12px; background: var(--ink); border: none; color: var(--paper); font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: opacity 0.15s; margin-top: 12px; }
+.run-btn:hover { opacity: 0.8; }
+.run-btn:active { opacity: 0.6; }
+.run-btn.running { opacity: 0.4; pointer-events: none; }
+
+.progress-wrap { height: 1px; background: var(--line); margin-bottom: 2rem; display: none; overflow: hidden; }
+.progress-bar { height: 100%; background: var(--ink); width: 0%; transition: width 0.1s; }
+
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line2); margin-bottom: 2rem; }
+.stat-box { background: var(--paper); padding: 20px 18px; text-align: center; }
+.stat-num { font-family: var(--mono); font-size: 28px; font-weight: 300; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+.stat-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); margin-top: 6px; }
+
+.tab-nav { display: flex; border-bottom: 1px solid var(--line2); margin-bottom: 2rem; }
+.tab-btn { padding: 10px 20px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: none; border-bottom: 2px solid transparent; color: var(--ink3); cursor: pointer; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
+.tab-btn:hover { color: var(--ink2); }
+.tab-btn.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+.filter-bar { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.filter-bar label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); }
+.filter-bar input { width: 72px; background: transparent; border: none; border-bottom: 1px solid var(--line2); padding: 2px 0; font-family: var(--mono); font-size: 13px; color: var(--ink); outline: none; }
+.filter-bar input:focus { border-bottom-color: var(--ink); }
+.csv-btn { margin-left: auto; padding: 5px 14px; background: transparent; border: 1px solid var(--line2); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink2); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+.csv-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+.tbl-wrap { overflow-x: auto; max-height: 440px; overflow-y: auto; border: 1px solid var(--line2); }
+table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; }
+thead th { background: var(--paper); position: sticky; top: 0; z-index: 2; padding: 10px 14px; text-align: left; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); font-weight: 400; border-bottom: 1px solid var(--line2); white-space: nowrap; }
+tbody td { padding: 9px 14px; border-bottom: 1px solid var(--line); color: var(--ink2); white-space: nowrap; vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(0,0,0,0.02); }
+td.n-col { color: var(--ink); font-weight: 500; }
+td.sigma-col { color: var(--blue); }
+
+.pill { display: inline-block; padding: 2px 9px; border-radius: 2px; font-size: 11.5px; }
+.pill-mult { background: rgba(44,95,138,0.08); color: var(--blue); }
+.pill-add { background: rgba(42,107,74,0.08); color: var(--green); }
+
+.tbl-foot { padding: 8px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink3); border: 1px solid var(--line2); border-top: none; }
+.empty-row { padding: 3rem; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink3); letter-spacing: 0.08em; }
+
+.insight-grid { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line2); }
+.i-card { background: var(--paper); padding: 20px 22px; }
+.i-card-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink3); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 3px 10px; font-family: var(--mono); font-size: 11px; border: 1px solid var(--line2); color: var(--ink2); background: transparent; }
+.p-table { width: 100%; border-collapse: collapse; }
+.p-table td { padding: 5px 0; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--ink2); }
+.p-table tr:last-child td { border-bottom: none; }
+.bar { display: inline-block; height: 4px; background: var(--ink3); border-radius: 1px; vertical-align: middle; margin-left: 8px; opacity: 0.5; }
+.i-scroll { max-height: 220px; overflow-y: auto; }
+.sig { font-family: Georgia, serif; font-style: italic; }
+.empty-insight { padding: 3rem; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink3); letter-spacing: 0.08em; border: 1px solid var(--line2); }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="logo-area">
-      <div class="logo-badge">ℙ</div>
-      <h1>Weakly Prime-Additive Explorer</h1>
-    </div>
-    <p class="subtitle">n = <span>p₁<sup>a</sup> · p₂<sup>b</sup> · p₃<sup>c</sup></span> = <span>p₁<sup>α</sup> + p₂<sup>β</sup> + p₃<sup>γ</sup></span></p>
-  </div>
-  <div class="controls-grid">
-    <div class="ctrl-block">
-      <label>ค้นหาถึง n =</label>
+<div class="wrap">
+
+  <header class="site-header">
+    <p class="site-title">Number Theory · Research Tool</p>
+    <h1>Weakly Prime-Additive Explorer</h1>
+    <p class="formula">n = p₁<sup>a₁</sup> · p₂<sup>a₂</sup> · p₃<sup>a₃</sup> = p₁<sup>s₁</sup> + p₂<sup>s₂</sup> + p₃<sup>s₃</sup></p>
+  </header>
+
+  <p class="section-label">Parameters</p>
+  <div class="config">
+    <div class="config-cell">
+      <label>Search limit</label>
       <input type="number" id="searchLimit" value="100000" min="100" max="5000000" step="1000">
     </div>
-    <div class="ctrl-block">
-      <label>จำนวนตัวประกอบเฉพาะ</label>
+    <div class="config-cell">
+      <label>Prime factors</label>
       <select id="numFactors">
         <option value="2">2 ตัว</option>
         <option value="3" selected>3 ตัว</option>
@@ -105,52 +131,62 @@
         <option value="5">4 ตัวขึ้นไป</option>
       </select>
     </div>
-    <div class="ctrl-block">
-      <label>กรองพจน์แรก</label>
-      <div class="toggle-wrap">
-        <button class="toggle on" id="reqToggle" onclick="toggleReq()"></button>
-        <span class="toggle-label" id="reqLabel">ต้องเป็น 2 หรือ 3</span>
+    <div class="config-cell">
+      <label>Filter first term</label>
+      <div class="toggle-row">
+        <button class="tog on" id="reqToggle" onclick="toggleReq()"></button>
+        <span class="tog-label" id="reqLabel">ต้องเป็น 2 หรือ 3</span>
       </div>
     </div>
-    <div class="ctrl-block" style="display:flex;flex-direction:column;justify-content:flex-end">
-      <button class="run-btn" id="runBtn" onclick="runSearch()">▶ เริ่มค้นหา</button>
+    <div class="config-cell" style="display:flex;flex-direction:column;justify-content:flex-end">
+      <button class="run-btn" id="runBtn" onclick="runSearch()">Run Search</button>
     </div>
   </div>
-  <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
-  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-    <div class="stat-card"><div class="stat-val green" id="statCount">—</div><div class="stat-lbl">พบทั้งหมด</div></div>
-    <div class="stat-card"><div class="stat-val" id="statMin">—</div><div class="stat-lbl">ค่าต่ำสุด</div></div>
-    <div class="stat-card"><div class="stat-val" id="statMax">—</div><div class="stat-lbl">ค่าสูงสุด</div></div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar" id="progressBar"></div>
   </div>
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('table',this)">ตาราง</button>
-    <button class="tab" onclick="switchTab('insight',this)">สังเกต</button>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num" id="statCount">—</div><div class="stat-lbl">Found</div></div>
+    <div class="stat-box"><div class="stat-num" id="statMin">—</div><div class="stat-lbl">Minimum</div></div>
+    <div class="stat-box"><div class="stat-num" id="statMax">—</div><div class="stat-lbl">Maximum</div></div>
   </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('table',this)">Table</button>
+    <button class="tab-btn" onclick="switchTab('insight',this)">Observations</button>
+  </div>
+
   <div id="tab-table">
-    <div class="tbl-outer">
-      <div class="filter-bar">
-        <label>n ≥</label><input type="number" id="fMin" placeholder="min" oninput="filterTable()">
-        <label>n ≤</label><input type="number" id="fMax" placeholder="max" oninput="filterTable()">
-        <label><span class="sig">σ</span>(n) ≥</label><input type="number" id="fSMin" placeholder="min" oninput="filterTable()">
-        <button onclick="downloadCSV()" style="margin-left:auto;padding:4px 12px;background:var(--green-dim);border:1px solid rgba(0,229,160,0.3);border-radius:6px;color:var(--green);font-family:var(--mono);font-size:12px;cursor:pointer">↓ CSV</button>
-      </div>
-      <div class="tbl-scroll">
-        <table>
-          <thead><tr>
-            <th>n</th><th><span class="sig">σ</span>(n)</th><th>รูปผลคูณ (×)</th><th>รูปผลบวก (+)</th><th>ตัวประกอบเฉพาะ</th>
-          </tr></thead>
-          <tbody id="tableBody"><tr><td colspan="5" class="empty-msg">กด "เริ่มค้นหา" เพื่อดูผล</td></tr></tbody>
-        </table>
-      </div>
-      <div class="tbl-footer" id="tableCount"></div>
+    <div class="filter-bar">
+      <label>n ≥</label><input type="number" id="fMin" placeholder="—" oninput="filterTable()">
+      <label>n ≤</label><input type="number" id="fMax" placeholder="—" oninput="filterTable()">
+      <label><span class="sig">σ</span>(n) ≥</label><input type="number" id="fSMin" placeholder="—" oninput="filterTable()">
+      <button class="csv-btn" onclick="downloadCSV()">↓ Export CSV</button>
     </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>n</th>
+          <th><span class="sig">σ</span>(n)</th>
+          <th>Multiplicative form</th>
+          <th>Additive form</th>
+          <th>Primes</th>
+        </tr></thead>
+        <tbody id="tableBody"><tr><td colspan="5" class="empty-row">Run search to display results</td></tr></tbody>
+      </table>
+    </div>
+    <div class="tbl-foot" id="tableCount"></div>
   </div>
+
   <div id="tab-insight" style="display:none">
-    <div id="insightContent" class="empty-msg">รันการค้นหาก่อนเพื่อดู observations</div>
+    <div id="insightContent" class="empty-insight">Run search to view observations</div>
   </div>
+
 </div>
 <script>
-let results=[],filtered=[],reqBase=true;
+let results=[], filtered=[], reqBase=true;
 
 function toggleReq(){
   reqBase=!reqBase;
@@ -186,7 +222,7 @@ function runSearch(){
   const limit=Math.min(+document.getElementById('searchLimit').value||100000,5000000);
   const nf=+document.getElementById('numFactors').value;
   const btn=document.getElementById('runBtn');
-  btn.textContent='⏳ กำลังค้นหา...';btn.classList.add('running');
+  btn.textContent='Searching…';btn.classList.add('running');
   document.getElementById('progressWrap').style.display='block';
   results=[];let i=2;
   function chunk(){
@@ -208,7 +244,7 @@ function runSearch(){
 
 function finalize(){
   const btn=document.getElementById('runBtn');
-  btn.textContent='▶ เริ่มค้นหาใหม่';btn.classList.remove('running');
+  btn.textContent='Run Search';btn.classList.remove('running');
   document.getElementById('progressWrap').style.display='none';
   filtered=[...results];updateStats();renderTable(filtered);buildInsights();
 }
@@ -223,15 +259,15 @@ function updateStats(){
 
 function renderTable(data){
   const tbody=document.getElementById('tableBody');
-  if(!data.length){tbody.innerHTML='<tr><td colspan="5" class="empty-msg">ไม่พบข้อมูลในช่วงนี้</td></tr>';return;}
+  if(!data.length){tbody.innerHTML='<tr><td colspan="5" class="empty-row">No results in this range</td></tr>';return;}
   tbody.innerHTML=data.slice(0,500).map(r=>`<tr>
-    <td class="num">${r.n.toLocaleString()}</td>
-    <td class="sigma-val">${r.sigma.toLocaleString()}</td>
-    <td><span class="badge-mult">${fmt(r.fac,' × ')}</span></td>
-    <td><span class="badge-add">${fmt(r.sol,' + ')}</span></td>
-    <td>${r.primes.join(', ')}</td>
+    <td class="n-col">${r.n.toLocaleString()}</td>
+    <td class="sigma-col">${r.sigma.toLocaleString()}</td>
+    <td><span class="pill pill-mult">${fmt(r.fac,' × ')}</span></td>
+    <td><span class="pill pill-add">${fmt(r.sol,' + ')}</span></td>
+    <td style="color:var(--ink3)">${r.primes.join(', ')}</td>
   </tr>`).join('');
-  document.getElementById('tableCount').textContent=data.length>500?`แสดง 500 จาก ${data.length.toLocaleString()} รายการ`:`พบทั้งหมด ${data.length.toLocaleString()} รายการ`;
+  document.getElementById('tableCount').textContent=data.length>500?`Showing 500 of ${data.length.toLocaleString()} results`:`${data.length.toLocaleString()} results`;
 }
 
 function filterTable(){
@@ -244,7 +280,7 @@ function filterTable(){
 
 function buildInsights(){
   const el=document.getElementById('insightContent');
-  if(!results.length){el.className='empty-msg';el.textContent='ไม่มีข้อมูล';return;}
+  if(!results.length){el.className='empty-insight';el.textContent='No data';return;}
   el.className='';
   const pf={};
   results.forEach(r=>r.primes.forEach(p=>{pf[p]=(pf[p]||0)+1;}));
@@ -259,59 +295,59 @@ function buildInsights(){
   function fmtSup(t,s){return t.map(([p,e])=>`${p}<sup>${e}</sup>`).join(s);}
 
   el.innerHTML=`<div class="insight-grid">
-    <div class="insight-card">
-      <h3>จำนวนเฉพาะที่ปรากฏบ่อย</h3>
-      <div class="chips">${topP.map(([p,c])=>`<span class="chip chip-green">p=${p} (${c}×)</span>`).join('')}</div>
+    <div class="i-card">
+      <div class="i-card-title">Most frequent primes</div>
+      <div class="chips">${topP.map(([p,c])=>`<span class="chip">p = ${p} &nbsp;(${c}×)</span>`).join('')}</div>
     </div>
-    <div class="insight-card">
-      <h3>รูปแบบชุดตัวประกอบเฉพาะที่พบมากที่สุด</h3>
-      <table class="pattern-table">${topPat.map(([k,c])=>`<tr>
-        <td style="color:var(--text2)">{${k}}</td>
-        <td style="color:var(--text3);text-align:right;width:40px">${c}×</td>
-        <td style="width:120px"><span class="bar-fill" style="width:${Math.round(c/maxC*100)}px"></span></td>
+    <div class="i-card">
+      <div class="i-card-title">Most common prime sets</div>
+      <table class="p-table">${topPat.map(([k,c])=>`<tr>
+        <td>{ ${k} }</td>
+        <td style="text-align:right;width:40px;color:var(--ink3)">${c}×</td>
+        <td style="width:100px"><span class="bar" style="width:${Math.round(c/maxC*88)}px"></span></td>
       </tr>`).join('')}</table>
     </div>
-    <div class="insight-card">
-      <h3>รูปผลคูณที่ชี้กำลังเป็นคี่ทั้งหมด — พบ ${oddExpMult.length} จำนวน</h3>
-      ${oddExpMult.length===0?`<p style="color:var(--text3);font-size:13px;font-family:var(--mono)">ไม่พบในช่วงที่ค้นหา</p>`:`
-      <div style="max-height:220px;overflow-y:auto"><table class="pattern-table">
-        <tr><td style="color:var(--text3);font-size:11px">n</td><td style="color:var(--text3);font-size:11px">รูปผลคูณ</td><td style="color:var(--text3);font-size:11px">ชี้กำลัง</td></tr>
+    <div class="i-card">
+      <div class="i-card-title">Multiplicative form — all exponents odd · ${oddExpMult.length} found</div>
+      ${oddExpMult.length===0?`<p style="font-family:var(--mono);font-size:12px;color:var(--ink3)">None in search range</p>`:`
+      <div class="i-scroll"><table class="p-table">
+        <tr><td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">n</td><td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">Form</td><td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">Exp</td></tr>
         ${oddExpMult.map(r=>`<tr>
-          <td style="color:var(--text);font-weight:500">${r.n.toLocaleString()}</td>
-          <td><span class="badge-mult" style="font-size:12px">${fmtSup(r.fac,' × ')}</span></td>
-          <td style="color:var(--amber)">${r.fac.map(([,e])=>e).join(', ')}</td>
+          <td style="color:var(--ink)">${r.n.toLocaleString()}</td>
+          <td><span class="pill pill-mult" style="font-size:11px">${fmtSup(r.fac,' × ')}</span></td>
+          <td style="color:var(--ink3)">${r.fac.map(([,e])=>e).join(', ')}</td>
         </tr>`).join('')}
       </table></div>`}
     </div>
-    <div class="insight-card">
-      <h3>รูปผลบวกที่ชี้กำลังเป็นคี่ทั้งหมด — พบ ${oddExpAdd.length} จำนวน</h3>
-      ${oddExpAdd.length===0?`<p style="color:var(--text3);font-size:13px;font-family:var(--mono)">ไม่พบในช่วงที่ค้นหา</p>`:`
-      <div style="max-height:220px;overflow-y:auto"><table class="pattern-table">
-        <tr><td style="color:var(--text3);font-size:11px">n</td><td style="color:var(--text3);font-size:11px">รูปผลบวก</td><td style="color:var(--text3);font-size:11px">ชี้กำลัง</td></tr>
+    <div class="i-card">
+      <div class="i-card-title">Additive form — all exponents odd · ${oddExpAdd.length} found</div>
+      ${oddExpAdd.length===0?`<p style="font-family:var(--mono);font-size:12px;color:var(--ink3)">None in search range</p>`:`
+      <div class="i-scroll"><table class="p-table">
+        <tr><td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">n</td><td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">Form</td><td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">Exp</td></tr>
         ${oddExpAdd.map(r=>`<tr>
-          <td style="color:var(--text);font-weight:500">${r.n.toLocaleString()}</td>
-          <td><span class="badge-add" style="font-size:12px">${fmtSup(r.sol,' + ')}</span></td>
-          <td style="color:var(--amber)">${r.sol.map(([,e])=>e).join(', ')}</td>
+          <td style="color:var(--ink)">${r.n.toLocaleString()}</td>
+          <td><span class="pill pill-add" style="font-size:11px">${fmtSup(r.sol,' + ')}</span></td>
+          <td style="color:var(--ink3)">${r.sol.map(([,e])=>e).join(', ')}</td>
         </tr>`).join('')}
       </table></div>`}
     </div>
-    <div class="insight-card">
-      <h3><span class="sig">σ</span>(n) ที่หารด้วย 3 ลงตัว และเลขชี้กำลังของรูปผลคูณที่เป็นคี่ทั้งหมด — พบ ${sigma3OddMult.length} จำนวน</h3>
-      ${sigma3OddMult.length===0?`<p style="color:var(--text3);font-size:13px;font-family:var(--mono)">ไม่พบในช่วงที่ค้นหา</p>`:`
-      <div style="max-height:220px;overflow-y:auto"><table class="pattern-table">
+    <div class="i-card">
+      <div class="i-card-title"><span class="sig">σ</span>(n) ≡ 0 (mod 3) & multiplicative exponents all odd · ${sigma3OddMult.length} found</div>
+      ${sigma3OddMult.length===0?`<p style="font-family:var(--mono);font-size:12px;color:var(--ink3)">None in search range</p>`:`
+      <div class="i-scroll"><table class="p-table">
         <tr>
-          <td style="color:var(--text3);font-size:11px">n</td>
-          <td style="color:var(--text3);font-size:11px"><span class="sig">σ</span>(n)</td>
-          <td style="color:var(--text3);font-size:11px">รูปผลคูณ</td>
-          <td style="color:var(--text3);font-size:11px">รูปผลบวก</td>
-          <td style="color:var(--text3);font-size:11px">ชี้กำลัง</td>
+          <td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">n</td>
+          <td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase"><span class="sig">σ</span>(n)</td>
+          <td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">Multiplicative</td>
+          <td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">Additive</td>
+          <td style="color:var(--ink3);font-size:10px;letter-spacing:.1em;text-transform:uppercase">Exp</td>
         </tr>
         ${sigma3OddMult.map(r=>`<tr>
-          <td style="color:var(--text);font-weight:500">${r.n.toLocaleString()}</td>
-          <td style="color:var(--purple)">${r.sigma.toLocaleString()}</td>
-          <td><span class="badge-mult" style="font-size:12px">${fmtSup(r.fac,' × ')}</span></td>
-          <td><span class="badge-add" style="font-size:12px">${fmtSup(r.sol,' + ')}</span></td>
-          <td style="color:var(--amber)">${r.fac.map(([,e])=>e).join(', ')}</td>
+          <td style="color:var(--ink)">${r.n.toLocaleString()}</td>
+          <td style="color:var(--blue)">${r.sigma.toLocaleString()}</td>
+          <td><span class="pill pill-mult" style="font-size:11px">${fmtSup(r.fac,' × ')}</span></td>
+          <td><span class="pill pill-add" style="font-size:11px">${fmtSup(r.sol,' + ')}</span></td>
+          <td style="color:var(--ink3)">${r.fac.map(([,e])=>e).join(', ')}</td>
         </tr>`).join('')}
       </table></div>`}
     </div>
@@ -330,7 +366,7 @@ function downloadCSV(){
 }
 
 function switchTab(name,btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   ['table','insight'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
 }
